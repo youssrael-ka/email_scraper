@@ -82,4 +82,8 @@ After the script completes:
 - Authentication Issues: If the browser does not open during the first authentication, check your Python environment and ensure that all required libraries are installed.
 
 - Token Expiry: If your token expires or becomes invalid, simply delete the token.json file and run the script again. This will prompt a new login.
+  
+---
 
+### License
+This project is open-source and can be modified or integrated into your systems as needed.
