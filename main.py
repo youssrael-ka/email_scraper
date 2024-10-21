@@ -1,4 +1,3 @@
-# main.py
 import json
 from authentication import GmailAuth
 from email_query import EmailQuery
