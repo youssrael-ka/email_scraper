@@ -1,4 +1,3 @@
-# email_query.py
 from googleapiclient.discovery import build
 
 class EmailQuery:
