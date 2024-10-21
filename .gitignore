@@ -1,0 +1,3 @@
+# Ignore credentials and output files
+credentials.json
+token.json
