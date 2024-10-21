@@ -10,6 +10,46 @@ class EmailScraper:
 
     def scrape_email_content(self):
         try:
+            body = None
+            if 'parts' in self.email_message['payload']:
+                for part in self.email_message['payload']['parts']:
+                    if part['mimeType'] == 'text/html':
+                        # Decode the HTML body and keep it as HTML
+                        body = base64.urlsafe_b64decode(part['body']['data']).decode('utf-8')
+                        break  # Stop as soon as we find the HTML part
+            if body is None:
+                body = "No HTML content available"
+            # Use BeautifulSoup to parse the decoded HTML
+            soup = BeautifulSoup(body, 'html.parser')
+            event_th = soup.find('th', string='Evènement')
+            entet = []
+            dataReservation = []
+            # Vérification si la balise <th> a été trouvée
+            if event_th:
+                # Sélection de la balise parente
+                row_th = event_th.parent
+                for col in row_th.find_all("th"):
+                    entet.append(col.text)
+                # print(entet)
+                tableP = row_th.parent
+                rows = tableP.find_all("tr")
+                # Affichage de la balise parente
+                # print(tableP)
+                for row in rows[1:]:  # On commence à partir de l'index 1
+                    index = 0
+                    reservation = {}
+                    for col in row.find_all("td"):
+                        reservation[entet[index]]=col.text.strip().replace("\n", " ").replace("\t", " ")
+                        index += 1
+                        ##print(col.text)
+                    dataReservation.append(reservation)
+                return dataReservation
+        except Exception as e:
+            print(f"An error occurred while scraping email content: {e}")
+            return None    
+
+    """def scrape_email_content(self):
+        try:
             email_data = self.email_message['payload']['parts'][0]['body']['data']
             decoded_data = base64.urlsafe_b64decode(email_data.encode('UTF-8')).decode('UTF-8')
 
@@ -21,8 +61,8 @@ class EmailScraper:
         except Exception as e:
             print(f"An error occurred while scraping email content: {e}")
             return None
-    
-    def query_emails(self, email_text):
+    """
+    """def query_emails(self, email_text):
         # Define regex patterns to extract the fields from the email
         patterns = {
             "event": r"Événement\s*:\s*(.*)",
@@ -56,6 +96,7 @@ class EmailScraper:
             }
 
         return data
+        """
         
     def save_to_json(self, data, output_file='event_data.json'):
         with open(output_file, 'w', encoding='utf-8') as f:
